@@ -1,6 +1,6 @@
-# move-more README
+# Timers VSCode Extension
 
-This is the README for your extension "move-more". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "timers". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
