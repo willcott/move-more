@@ -55,14 +55,12 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
           if (!timer.paused) {
             vscode.window
               .showInformationMessage(
-                "Time to move!",
+                `Timer "${timer.name}" Finished.`,
                 { modal: this.modalPopup },
                 "Reset Timer"
               )
               .then((selection) => {
                 if (selection === "Reset Timer") {
-                  console.log("[🪵 🤖][MoveMoreTreeProvider.ts][Line: 42]");
-
                   timer.startTime = Date.now();
                   this._onDidChangeTreeData.fire();
                   return;
@@ -72,7 +70,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
           }
 
           return new TimerItem(
-            `Finished`,
+            `"${timer.name}" Finished.`,
             "",
             "",
             vscode.TreeItemCollapsibleState.None
@@ -80,11 +78,9 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
         }
 
         return new TimerItem(
-          `Time Remaining: ${this.millisToMinutesAndSeconds(
-            timer.timeRemaining
-          )}`,
           timer.name,
-          "",
+          `${this.millisToMinutesAndSeconds(timer.timeRemaining)} Remaining`,
+          `${timer.name} timer`,
           vscode.TreeItemCollapsibleState.None
         );
       })
