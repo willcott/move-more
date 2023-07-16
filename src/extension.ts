@@ -22,11 +22,14 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.window.registerTreeDataProvider("timers", treeProvider);
 
   vscode.commands.registerCommand("timers.resetTimer", (timer) =>
-    treeProvider.resetAlarm(timer)
+    treeProvider.resetTimer(timer)
   );
 
+  vscode.commands.registerCommand("timers.resetAll", () => {
+    treeProvider.resetAll();
+  });
+
   vscode.commands.registerCommand("timers.deleteTimer", (timer) => {
-    console.log("123");
     treeProvider.deleteTimer(timer);
   });
 
@@ -35,19 +38,23 @@ export function activate(context: vscode.ExtensionContext) {
       .showInputBox({
         prompt: "New Timer Name:",
         placeHolder: "(new timer name)",
+        validateInput: (value) =>
+        /^[a-zA-Z\s]*$/.test(value)
+          ? undefined
+          : `${value} is not a valid timer name.`,
       })
       .then((name) => {
         vscode.window
           .showInputBox({
             prompt: "New Timer Length (mins):",
             placeHolder: "(new timer length (mins))",
+            validateInput: (value) =>
+              isNaN(parseInt(value))
+                ? `${value} is not a valid timer length.`
+                : undefined,
           })
           .then((length) => {
-            treeProvider.addTimer({
-              name: name as string,
-              length: parseInt(length as string),
-              startTime: Date.now(),
-            });
+            treeProvider.addTimer(name as string, parseInt(length as string));
           });
       });
   });

@@ -35,10 +35,6 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
   }
 
   getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
-    // return Promise.resolve([
-    //   new TimerItem(`STAND UP`, "", "", vscode.TreeItemCollapsibleState.None),
-    // ]);
-
     if (this.timers.some((timer) => !timer.paused)) {
       setTimeout(() => this._onDidChangeTreeData.fire(), 1000);
     }
@@ -46,9 +42,6 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
       this.timers.map((timer) => {
         const timeElapsed = Date.now() - timer.startTime;
         timer.timeRemaining = timer.length * 60 * 1000 - timeElapsed;
-        console.log(
-          `[🪵 🤖][MoveMoreTreeProvider.ts][Line: 28] - timeRemaining = ${timer.timeRemaining}`
-        );
         if (timer.timeRemaining < 0) {
           console.log("[🪵 🤖][MoveMoreTreeProvider.ts][Line: 30]");
 
@@ -62,6 +55,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
               .then((selection) => {
                 if (selection === "Reset Timer") {
                   timer.startTime = Date.now();
+                  timer.paused = false;
                   this._onDidChangeTreeData.fire();
                   return;
                 }
@@ -70,9 +64,9 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
           }
 
           return new TimerItem(
-            `"${timer.name}" Finished.`,
-            "",
-            "",
+            timer.name,
+            "Finished",
+            `${timer.name} Finished`,
             vscode.TreeItemCollapsibleState.None
           );
         }
@@ -87,21 +81,36 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     );
   }
 
-  resetAlarm({ contextValue }: TimerItem) {
-    const timer = this.timers.find((timer) => timer.name === contextValue);
+  resetTimer({ label }: TimerItem) {
+    console.log("yo what on");
+    const timer = this.timers.find((timer) => timer.name === label);
     if (timer) {
+      console.log("Found timer", timer.name);
       timer.startTime = Date.now();
+      timer.paused = false;
       this._onDidChangeTreeData.fire();
     }
   }
 
-  deleteTimer({ contextValue }: TimerItem) {
-    console.log("deleting", contextValue);
-    this.timers = this.timers.filter((timer) => timer.name !== contextValue);
+  resetAll() {
+    this.timers.forEach((timer) => {
+      timer.startTime = Date.now();
+      timer.paused = false;
+    });
+    this._onDidChangeTreeData.fire();
   }
 
-  addTimer(timerConfig: TimerConfig) {
-    this.timers.push(timerConfig);
+  deleteTimer({ label }: TimerItem) {
+    console.log("deleting", label);
+    this.timers = this.timers.filter((timer) => timer.name !== label);
+  }
+
+  addTimer(name: string, length: number) {
+    this.timers.push({
+      name: name,
+      length: length,
+      startTime: Date.now(),
+    });
   }
 
   private millisToMinutesAndSeconds(millis: number): string {
