@@ -25,7 +25,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
   modalPopup: boolean;
   timers: TimerConfig[];
 
-  constructor({ timerLength, modalPopup }: Config) {
+  constructor({ modalPopup }: Config) {
     this.modalPopup = modalPopup;
     this.timers = [{ name: "Stand Up", length: 2, startTime: Date.now() }];
   }
@@ -34,7 +34,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     return element;
   }
 
-  getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+  getChildren(): Thenable<vscode.TreeItem[]> {
     if (this.timers.some((timer) => !timer.paused)) {
       setTimeout(() => this._onDidChangeTreeData.fire(), 1000);
     }
@@ -43,8 +43,6 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
         const timeElapsed = Date.now() - timer.startTime;
         timer.timeRemaining = timer.length * 60 * 1000 - timeElapsed;
         if (timer.timeRemaining < 0) {
-          console.log("[🪵 🤖][MoveMoreTreeProvider.ts][Line: 30]");
-
           if (!timer.paused) {
             vscode.window
               .showInformationMessage(
@@ -82,10 +80,8 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
   }
 
   resetTimer({ label }: TimerItem) {
-    console.log("yo what on");
     const timer = this.timers.find((timer) => timer.name === label);
     if (timer) {
-      console.log("Found timer", timer.name);
       timer.startTime = Date.now();
       timer.paused = false;
       this._onDidChangeTreeData.fire();
@@ -101,7 +97,6 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
   }
 
   deleteTimer({ label }: TimerItem) {
-    console.log("deleting", label);
     this.timers = this.timers.filter((timer) => timer.name !== label);
   }
 
@@ -138,36 +133,5 @@ class TimerItem extends vscode.TreeItem {
   iconPath = {
     light: "$(history)",
     dark: "$(history)",
-  };
-}
-
-class AddTimerItem extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    public readonly tooltip: string,
-    public readonly description: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
-  ) {
-    super(`hello`, collapsibleState);
-    this.contextValue = "add-timer";
-  }
-
-  iconPath = {
-    light: path.join(
-      __filename,
-      "..",
-      "..",
-      "resources",
-      "light",
-      "dependency.svg"
-    ),
-    dark: path.join(
-      __filename,
-      "..",
-      "..",
-      "resources",
-      "dark",
-      "dependency.svg"
-    ),
   };
 }
