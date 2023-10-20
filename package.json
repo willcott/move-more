@@ -2,6 +2,7 @@
   "name": "timers",
   "displayName": "timers",
   "description": "A VS Code extension that helps you set timers for anything.",
+  "icon": "timer.png",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.79.0"
@@ -10,6 +11,10 @@
     "Other"
   ],
   "main": "./dist/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willcott/timer-vscode-extension"
+  },
   "contributes": {
     "views": {
       "explorer": [
@@ -77,7 +82,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "install": "npm run package; vsce package; code --install-extension timers-0.0.1.vsix"
   },
   "devDependencies": {
     "@types/vscode": "^1.79.0",
