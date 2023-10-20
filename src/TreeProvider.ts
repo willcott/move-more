@@ -1,10 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
-
-interface Config {
-  timerLength: number;
-  modalPopup: boolean;
-}
 
 interface TimerConfig {
   name: string;
@@ -22,12 +16,10 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     vscode.TreeItem | undefined | null | void
   > = this._onDidChangeTreeData.event;
 
-  modalPopup: boolean;
   timers: TimerConfig[];
 
-  constructor({ modalPopup }: Config) {
-    this.modalPopup = modalPopup;
-    this.timers = [{ name: "Stand Up", length: 2, startTime: Date.now() }];
+  constructor() {
+    this.timers = [];
   }
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
@@ -47,7 +39,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
             vscode.window
               .showInformationMessage(
                 `Timer "${timer.name}" Finished.`,
-                { modal: this.modalPopup },
+                { modal: false },
                 "Reset Timer"
               )
               .then((selection) => {
@@ -98,6 +90,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
   deleteTimer({ label }: TimerItem) {
     this.timers = this.timers.filter((timer) => timer.name !== label);
+    this._onDidChangeTreeData.fire();
   }
 
   addTimer(name: string, length: number) {
@@ -106,6 +99,7 @@ export class TreeProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
       length: length,
       startTime: Date.now(),
     });
+    this._onDidChangeTreeData.fire();
   }
 
   private millisToMinutesAndSeconds(millis: number): string {

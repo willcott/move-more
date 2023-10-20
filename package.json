@@ -11,21 +11,6 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "configuration": {
-      "title": "Timers",
-      "properties": {
-        "timers.timerLength": {
-          "type": "number",
-          "default": 20,
-          "markdownDescription": "Specifies the length of the timer in minutes."
-        },
-        "timers.modalPopup": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Specifies whether to use a modal information message."
-        }
-      }
-    },
     "views": {
       "explorer": [
         {

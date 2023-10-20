@@ -10,15 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "Timers" is now active!');
 
-  const configuration = vscode.workspace.getConfiguration("timers");
-
-  const timerLength = configuration.get("timerLength") as number;
-  const modalPopup = configuration.get("modalPopup") as boolean;
-
-  const treeProvider = new TreeProvider({
-    timerLength,
-    modalPopup,
-  });
+  const treeProvider = new TreeProvider();
   vscode.window.registerTreeDataProvider("timers", treeProvider);
 
   vscode.commands.registerCommand("timers.resetTimer", (timer) =>
